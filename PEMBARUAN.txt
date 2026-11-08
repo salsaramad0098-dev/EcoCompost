@@ -1,0 +1,8 @@
+PEMBARUAN ECOCOMPOST
+- Menambahkan migrasi database yang aman untuk role, petugas_id, dan status perjalanan.
+- Menambahkan halaman dashboard khusus petugas.
+- Menghubungkan generate jadwal dengan user petugas melalui petugas_id.
+- Memperbarui menu sidebar berdasarkan role.
+- Menambahkan pembatasan akses admin dan petugas.
+- Memperbarui schema SQL untuk instalasi baru.
+- Memperbaiki index.php agar menggunakan app.php dan routing role.

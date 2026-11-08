@@ -1,0 +1,10 @@
+<?php
+require_once __DIR__.'/config/app.php';wajib_login();
+$loc=$pdo->query('SELECT * FROM lokasi ORDER BY nama_lokasi')->fetchAll();$f=(int)($_GET['lokasi']??0);
+$sql="SELECT m.*,l.nama_lokasi FROM monitoring m JOIN lokasi l ON l.id=m.lokasi_id";$p=[];if($f){$sql.=" WHERE m.lokasi_id=?";$p[]=$f;}$sql.=" ORDER BY m.waktu_pantau DESC LIMIT 500";$q=$pdo->prepare($sql);$q->execute($p);$rows=$q->fetchAll();
+$pageTitle='Monitoring Sensor IoT';$active='monitoring';require __DIR__.'/includes/header.php';?>
+<div class="section-head"><div><h2>Data sensor masuk</h2><p>Riwayat pengukuran suhu, kelembapan, gas, dan berat sampah.</p></div><span class="tag">API ESP32</span></div>
+<section class="panel"><form class="filter" method="get"><label>Filter lokasi</label><select name="lokasi"><option value="0">Semua lokasi</option><?php foreach($loc as $l):?><option value="<?=$l['id']?>" <?=$f===$l['id']?'selected':''?>><?=e($l['nama_lokasi'])?></option><?php endforeach?></select><button class="btn small">Filter</button></form>
+<div class="table-wrap"><table><thead><tr><th>Waktu</th><th>Lokasi</th><th>Suhu °C</th><th>Kelembapan %</th><th>Gas (indeks)</th><th>Berat</th><th>Skor</th><th>Klasifikasi</th></tr></thead><tbody><?php foreach($rows as $r):?><tr><td><?=e($r['waktu_pantau'])?></td><td><b><?=e($r['nama_lokasi'])?></b></td><td><?=e($r['suhu'])?></td><td><?=e($r['kelembapan'])?></td><td><?=e($r['gas'])?></td><td><?=kg($r['berat'])?></td><td><?=$r['skor_kebusukan']?>/100</td><td><?=badge($r['status_kebusukan'])?></td></tr><?php endforeach?><?php if(!$rows):?><tr><td colspan="8" class="empty">Belum ada data sensor.</td></tr><?php endif?></tbody></table></div></section>
+<div class="note"><b>Integrasi sensor:</b> ESP32 mengirim JSON ke <code>/kompostase/api/terima_sensor.php</code>. Data gas adalah indeks relatif 0–1000 yang harus dikalibrasi, bukan angka ppm mentah.</div>
+<?php require __DIR__.'/includes/footer.php';?>
